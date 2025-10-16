@@ -1,0 +1,115 @@
+{
+  "version": "1.0",
+  "generated": "2025-10-12T10:30:00Z",
+  "description": "Hosts blocklist in JSON format",
+  "entries": [
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.ytr.shivtirthvadapav.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yuechengcn.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yuhuevents.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yukbelajarbareng.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yummzapp.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yuppipuppy.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yvoinorred.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.ywebca.org",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yxwutgbdlh.ltd",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yycnetworks.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.yyseo.store",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.z2d9v8d.online",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.za10groszy.pl",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "101.168.4.77",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.zabkonline.play-official-slots.net",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "101.43.58.190",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.zafid.com",
+      "enabled": true,
+      "category": "blocklist"
+    },
+    {
+      "ip": "0.0.0.0",
+      "hostname": "www.zahnliner.com",
+      "enabled": true,
+      "category": "blocklist"
+    }
+  ]
+}
