@@ -13,33 +13,27 @@ class StatusLogMonitor:
         self.last_status = {}
         self.first_run = True
 
-    def read_last_line(self, log_path):
-        """Read last line from file."""
+    def read_last_status_line(self, log_path):
+        """
+        Read the last line from the file that contains the word 'STATUS'.
+        
+        Args:
+            log_path (str): Path to the log file.
+        
+        Returns:
+            str: The last line containing 'STATUS' or a default message.
+        """
+
         try:
             with open(log_path, 'r') as f:
-                lines = f.readlines()
-                return lines[-1].strip() if lines else "No data yet"
+                for line in reversed(f.readlines()):
+                    if "STATUS" in line:
+                        return line.strip()
+                return "No STATUS line found"
         except FileNotFoundError:
             return "Not started"
         except Exception as e:
             return f"Error: {e}"
-
-    def check_failed(self, log_path):
-        """
-        Check if last line indicates failure.
-
-        Args:
-            log_path (str): Path to the log file.
-
-        Returns:
-            bool: True if last line indicates failure, False otherwise.
-        
-        """
-        try:
-            with open(log_path, 'r') as f:
-                return True if 'STATUS: failed' in f.readlines()[-1] else False
-        except:
-            return False
 
     def has_status_changed(self, service_name, current_status):
         """Check if status has changed since last check."""
@@ -90,25 +84,22 @@ class StatusLogMonitor:
                     log_path = f"{self.filepath}/{log_file}"
                     
                     try:
-                        current_status = self.read_last_line(log_path)
+                        current_status = self.read_last_status_line(log_path)
                         if self.has_status_changed(service_name, current_status):
                             any_changes = True
-                            print(f"  🔹 {service_name}: {current_status}", flush=True)
-                            
-                            if self.check_failed(log_path):
-                                print(f"     ⚠️  Errors found", flush=True)
-                            else:
-                                print(f"     ✅ No errors", flush=True)
-
-                            if "STATUS: completed_with_errors" in current_status:
+                            print(f" 🔹 {service_name}: {current_status}", flush=True)
+                            print(current_status, flush=True)
+                            if any(s in current_status for s in ["STATUS: failed", "STATUS: completed_with_errors"]):
+                                print(f"⚠️  Errors found", flush=True)
                                 email_sent = self.alert_email(service_name, current_status)
                                 if email_sent:
-                                    print(f"     📧 Alert email sent to team", flush=True)
+                                    print(f"📧 Alert email sent to team", flush=True)   
                                 else:
-                                    print(f"     ❌ Failed to send alert email", flush=True)
-                    
+                                    print(f"❌ Failed to send alert email", flush=True)
+                            else:
+                                print(f"✅ No errors", flush=True)
                     except Exception as e:
-                        print(f"  ❌ ERROR checking {service_name}: {e}", flush=True)
+                        raise Exception(f"❌ ERROR checking service '{service_name}': {e}")
                 
                 if self.first_run:
                     print("✅ Initial check complete", flush=True)
@@ -121,24 +112,31 @@ class StatusLogMonitor:
         except KeyboardInterrupt:
             print("\nMonitor stopped by user", flush=True)
         except Exception as e:
-            print(f"\nFATAL ERROR: {e}", flush=True)
+            print(f"\n ❌ FATAL ERROR: {e}", flush=True)
             import traceback
             traceback.print_exc()
             sys.exit(1)
 
 def parse_monitor_services(services_str):
-    """Parse MONITOR_SERVICES environment variable."""
+    """
+    Parse MONITOR_SERVICES environment variable.
+    
+    Args:
+        services_str (str): Comma-separated service:logfile pairs.
+        
+    Returns:
+        dict: Parsed services with service names as keys and log file names as values.
+    """
+
     services = {}
-    if not services_str:
-        return services
-    
     for pair in services_str.split(','):
-        pair = pair.strip()
-        if ':' in pair:
-            service, logfile = pair.split(':', 1)
-            services[service.strip()] = logfile.strip()
-    
-    print(f"Parsed {len(services)} services", flush=True)
+        try:
+            pair = pair.strip()
+            if ':' in pair:
+                service, logfile = pair.split(':', 1)
+                services[service.strip()] = logfile.strip()
+        except Exception as e:
+            print(f"❌ ERROR parsing service '{pair}': {e}", flush=True)
     return services
 
 if __name__ == "__main__":
@@ -148,7 +146,6 @@ if __name__ == "__main__":
         print(f"Time: {datetime.now()}", flush=True)
         print("=" * 100, flush=True)
 
-        print("Reading environment variables...", flush=True)
         log_dir = os.getenv("PROCESS_LOG_DIRS")
         services = os.getenv("MONITOR_SERVICES")
         
@@ -156,17 +153,17 @@ if __name__ == "__main__":
         print(f"MONITOR_SERVICES = {services}", flush=True)
         
         if not log_dir:
-            print("ERROR: PROCESS_LOG_DIRS not set!", flush=True)
+            print("❌ ERROR: PROCESS_LOG_DIRS not set!", flush=True)
             sys.exit(1)
         
         if not services:
-            print("ERROR: MONITOR_SERVICES not set!", flush=True)
+            print("❌ ERROR: MONITOR_SERVICES not set!", flush=True)
             sys.exit(1)
         
         parsed_services = parse_monitor_services(services)
         
         if not parsed_services:
-            print("ERROR: No services parsed!", flush=True)
+            print("❌ ERROR: No services parsed!", flush=True)
             sys.exit(1)
 
         monitor = StatusLogMonitor(log_dir, parsed_services)
@@ -174,7 +171,7 @@ if __name__ == "__main__":
         monitor.monitor_pipeline()
         
     except Exception as e:
-        print(f"FATAL ERROR: {e}", flush=True)
+        print(f"❌ FATAL ERROR: {e}", flush=True)
         import traceback
         traceback.print_exc()
         sys.exit(1)
