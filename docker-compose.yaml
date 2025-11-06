@@ -87,6 +87,11 @@ services:
     environment:
       PYTHONPATH: /app
       PROCESS_LOG_DIRS: /app/data/logs
-      MONITOR_SERVICES: hosts-topics:hosts_topics_status.log, hosts-producer:hosts_producer_status.log, hosts-consumer:hosts_consumer_status.log
+      MONITOR_SERVICES: hosts-topics:hosts_topics.log, hosts-producer:hosts_producer.log, hosts-consumer:hosts_consumer.log
+      SMTP_SERVER:
+      SMTP_PORT:
+      SMTP_USER:
+      SMTP_PASSWORD:
+      ALERT_EMAIL:
     volumes:
       - .:/app

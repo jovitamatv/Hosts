@@ -4,25 +4,26 @@ import pyspark.sql.functions as F
 
 
 class HostsLoader:
-    """Class to handle loading transformed host data into a Delta Lake table.
+    """
+    Class to handle loading transformed host data into a Delta Lake table.
     And optimize the table for performance.
+    
     Attributes:
         spark (SparkSession): The Spark session.
-        batch (list): List of dictionaries representing the batch of data.
         delta_table_path (str): The path to the Delta Lake table.
         logger (logging.Logger): Logger instance for logging.
     """
 
-    def __init__(self, spark,  batch, delta_table_path, logger):
-        """Initialize the HostsLoader with Spark session, batch data, Delta table path, and logger.
+    def __init__(self, spark, delta_table_path, logger):
+        """
+        Initialize the HostsLoader with Spark session, Delta table path, and logger.
+        
         Args:
             spark (SparkSession): The Spark session.
-            batch (list): List of dictionaries representing the batch of data.
             delta_table_path (str): The path to the Delta Lake table.
             logger (logging.Logger): Logger instance for logging.
         """
         self.spark = spark
-        self.batch = batch
         self.delta_table_path = delta_table_path
         self.logger = logger
 
@@ -43,7 +44,9 @@ class HostsLoader:
         )
 
     def check_table_exists(self):
-        """Check if the Delta Lake table exists at the specified path.
+        """
+        Check if the Delta Lake table exists at the specified path.
+
         Returns:
             bool: True if the table exists, False otherwise.
         """
@@ -54,10 +57,15 @@ class HostsLoader:
             self.logger.info(f"Delta table does not exist at {self.delta_table_path}")
             return False
 
-    def write_to_deltalake(self):
-        """Write a batch of data to a Delta Lake table."""
+    def write_to_deltalake(self, batch):
+        """
+        Write a batch of data to a Delta Lake table.
+        
+        Args:
+            batch (list): List of dictionaries representing the batch of data.
+        """
 
-        spark_df =(self.spark.createDataFrame(self.batch)
+        spark_df =(self.spark.createDataFrame(batch)
                     .withColumn("retrieved_at", F.to_timestamp("retrieved_at"))
                     .dropDuplicates(['hashed_host']))
 
@@ -78,12 +86,13 @@ class HostsLoader:
         )
         delta_table.optimize().executeCompaction()
         spark_df.unpersist()
-        self.logger.info(f"Successfully wrote batch size of {len(self.batch)} to Delta table at {self.delta_table_path}")
+        self.logger.info(f"Successfully wrote batch size of {len(batch)} to Delta table at {self.delta_table_path}")
 
             
 
     def optimize_delta_table(self):
-        """Optimize a Delta Lake table to improve performance.
+        """
+        Optimize a Delta Lake table to improve performance.
         Includes compaction and vacuuming.
         """
         try:

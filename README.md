@@ -21,7 +21,7 @@ This will start the following services:
 - **Kafka**: Message broker for data streaming
 - **Hosts Topics**: Creates Kafka topics for each data source based on config.yaml
 - **Hosts Producer**: Fetches data from configured sources and publishes to Kafka
-- **Hosts Consumer**: Consumes data from Kafka, transforms and stores in Delta Lake format
+- **Hosts Consumer**: Consumes data from Kafka, transforms and stores in Delta Table format
 - **Monitor**: Monitors the health of all services
 
 ### Stopping the System
@@ -50,6 +50,7 @@ docker-compose down -v
 │   └── utils/              # Producer utilities
 ├── topics/                 # Kafka topic management
 │   └── hosts_topics.py     # Topic creation and configuration
+│   └── utils/              # Topic creation utilities
 ├── monitoring/             # System monitoring
 │   └── monitor.py          # Health monitoring service
 ├── utils/                  # Shared utilities
@@ -100,6 +101,19 @@ sources:
     topic_partitions: 3               # Kafka partitions for the source topic
     topic_replication_factor: 1       # Kafka replication factor for the topic
 ```
+## Storage
+ Table name: `hosts`  
+  Location: configured as a environment variable in hosts-consumer.
+### Shema
+
+| Column name    | Type      | Nullable | Description |
+|----------------|-----------|----------|-------------|
+| defanged_host  | STRING    | NO       | Defanged host string (e.g. dots replaced with [.]) |
+| hashed_host    | STRING    | NO       | Hashed host value |
+| category       | STRING    | YES      | Category of the host |
+| source_name    | STRING    | NO       | Source identifier |
+| source_url     | STRING    | NO       | Source URL where host was obtained |
+| retrieved_at   | TIMESTAMP | NO       | Timestamp when the host was retrieved |
 
 ### Environment Variables
 
